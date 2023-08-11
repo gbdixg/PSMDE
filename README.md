@@ -2,24 +2,24 @@
 PowerShell module for interactive access to the Defender Security API
 
 Functions:  
-Connect-SecurityCenter  
-Get-PSMDEDeviceInfo  
-Get-PSMDELatestVersion  
-Invoke-PSMDEAdvancedHunting  
-Save-PSMDESupportInfo  
-Test-PSMDEMapsConnection  
+- Connect-SecurityCenter  
+- Get-PSMDEDeviceInfo  
+- Get-PSMDELatestVersion  
+- Invoke-PSMDEAdvancedHunting  
+- Save-PSMDESupportInfo  
+- Test-PSMDEMapsConnection  
 
-Step1: 
+## Step1: 
 Create an Azure application to control authentication and authorization.  
 A step by step process is available here: https://write-verbose.com/2023/05/24/DefenderSecurityAPI/  
 
-Step2:  
+## Step2:  
 Start PowerShell in the contect of an account with access to Defender information:
 - Built in reader roles such as Global Reader or Security Reader
 - Privileged roles such as Global Admin, Security Opertator, Security Admin
 - A custom role with delegated access to your tenant
 
-Step3:  
+## Step3:  
 Use the module...  
 
 ```PowerShell
@@ -27,7 +27,7 @@ Import-Module PSMDE
 Connect-SecurityCenter -TenantID $TenantID -ClientID $ClientID  
 Get-PSMDEDeviceInfo -Computername PC12345  
 ```
-
+```cmd
 Computername                  : PC12345  
 osPlatform                    : Windows10  
 version                       : 22H2  
@@ -57,7 +57,7 @@ LastSeenUTC                   : 06/08/2023 18:57:16
 lastIpAddress                 : 192.168.1.170  
 lastExternalIpAddress         : 90.13.111.27  
 managedBy                     : Intune
-
+```
 
 ```PowerShell
 Get-PSMDEAdvancedHunting -Query @'  
@@ -69,7 +69,7 @@ DeviceNetworkEvents
 | limit 5
 '@
 ```
-
+```cmd
  RemoteUrl                           count_
 ---------                           ------
 login.microsoftonline.com               32
@@ -77,5 +77,5 @@ v10.events.data.microsoft.com           32
 ctldl.windowsupdate.com                 25
 eu-mobile.events.data.microsoft.com     23
 self.events.data.microsoft.com          19
-
+```
 
