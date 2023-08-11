@@ -14,13 +14,13 @@ Create an Azure application to control authentication and authorization.
 A step by step process is available here: https://write-verbose.com/2023/05/24/DefenderSecurityAPI/  
 
 ## Step2:  
-Start PowerShell in the contect of an account with access to Defender information:
-- Built in reader roles such as Global Reader or Security Reader
-- Privileged roles such as Global Admin, Security Opertator, Security Admin
+Start PowerShell in the context of an account with access to Defender information i.e. a member of
+- A built in reader role such as Global Reader or Security Reader
+- A privileged role such as Global Admin, Security Opertator, Security Admin
 - A custom role with delegated access to your tenant
 
 ## Step3:  
-Use the module...  
+Use the module interactively
 
 ```PowerShell
 Import-Module PSMDE  
