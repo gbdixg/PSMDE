@@ -23,9 +23,10 @@ Step3:
 Use the module...  
 
 ```PowerShell
-PS C:\> Import-Module PSMDE  
-PS C:\> Connect-SecurityCenter -TenantID $TenantID -ClientID $ClientID  
-PS C:\> Get-PSMDEDeviceInfo -Computername PC12345  
+Import-Module PSMDE  
+Connect-SecurityCenter -TenantID $TenantID -ClientID $ClientID  
+Get-PSMDEDeviceInfo -Computername PC12345  
+```
 
 Computername                  : PC12345  
 osPlatform                    : Windows10  
@@ -56,10 +57,10 @@ LastSeenUTC                   : 06/08/2023 18:57:16
 lastIpAddress                 : 192.168.1.170  
 lastExternalIpAddress         : 90.13.111.27  
 managedBy                     : Intune
-```
+
 
 ```PowerShell
-PS C:\> Get-PSMDEAdvancedHunting -Query @'  
+Get-PSMDEAdvancedHunting -Query @'  
 DeviceNetworkEvents  
 | where Timestamp > ago(6d)  
 | where RemoteUrl!=""  
@@ -67,6 +68,7 @@ DeviceNetworkEvents
 | order by count_ desc
 | limit 5
 '@
+```
 
  RemoteUrl                           count_
 ---------                           ------
@@ -75,5 +77,5 @@ v10.events.data.microsoft.com           32
 ctldl.windowsupdate.com                 25
 eu-mobile.events.data.microsoft.com     23
 self.events.data.microsoft.com          19
-```
+
 
