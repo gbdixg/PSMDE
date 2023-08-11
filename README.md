@@ -24,7 +24,7 @@ Use the module...
 
 ```PowerShell
 Import-Module PSMDE  
-Connect-SecurityCenter -TenantID $TenantID -ClientID $ClientID  
+Connect-SecurityCenter -TenantID $TenantID -ClientID $AppID  
 Get-PSMDEDeviceInfo -Computername PC12345  
 ```
 ```cmd
