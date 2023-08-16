@@ -10,13 +10,13 @@
   A value of 0 will return all results
 
   .EXAMPLE
-  Get-MDEAdvancedHunting -query 'DeviceProcessEvents | where Timestamp > ago(1d)'
+  Invoke-PSMDEAdvancedHunting -query 'DeviceProcessEvents | where Timestamp > ago(1d)'
 
   This command will return up-to 1000 records from the DeviceProcessEvents table
   that were recorded in the last day.
 
   .EXAMPLE
-  Get-MDEAdvancedHunting -query 'DeviceProcessEvents | where Timestamp > ago(1d)' -MaxResult 0
+  Invoke-PSMDEAdvancedHunting -query 'DeviceProcessEvents | where Timestamp > ago(1d)' -MaxResult 0
 
   This command will return all records from the DeviceProcessEvents table
   that were recorded in the last day.
@@ -83,7 +83,8 @@ param(
 
 PROCESS{
 
-    $url = 'https://api.securitycenter.microsoft.com/api/advancedqueries/run'
+    #$url = 'https://api.securitycenter.microsoft.com/api/advancedqueries/run'
+    $url = 'https://api.securitycenter.microsoft.com/api/advancedhunting/run'
 
     $body = ConvertTo-Json -InputObject @{ 'Query' = $query }
 
@@ -104,17 +105,17 @@ PROCESS{
 
             $Results = $Response.results
 
-            $Results  | ForEach-Object {
-                $ReturnedRecords++
-                if($ReturnedRecords -le $MaxResults){
+                $Results  | ForEach-Object {
+                    $ReturnedRecords++
+                    if($ReturnedRecords -le $MaxResults){
 
-                    $Result = $_
-                    $DateProperties | ForEach-Object{
-                        $Result."$_" = ConvertFrom-ISO8601 -Date $Result."$_"
+                        $Result = $_
+                        $DateProperties | ForEach-Object{
+                            $Result."$_" = ConvertFrom-ISO8601 -Date $Result."$_"
+                        }
+                        if ($null -ne $Result){$Result}
                     }
-                    $Result
                 }
-            }
         }
 
         # Set the URI to the next page of results
@@ -126,8 +127,6 @@ PROCESS{
 
 }
 
-END{
 
-}
 
 }

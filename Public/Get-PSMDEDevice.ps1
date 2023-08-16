@@ -64,7 +64,7 @@
 [cmdletBinding()]
 param(
     [parameter(position=0,ValueFromPipeLine,ValueFromPipeLineByPropertyName)]
-    [Alias("MachineName")]
+    [Alias("MachineName","hostname","devicename","device","host","computer")]
     [ValidateNotNullOrEmpty()]
     [String]$Computername
     ,
@@ -105,7 +105,7 @@ PROCESS{
 
                     $MachineResult = $Entry
 
-                    $output = $MachineResult | Select-Object @{n = 'Computername'; e = { $_.computerDnsName } }, computerDnsName,isPotentialDuplication,osPlatform,version,agentVersion,osBuild,healthStatus,exposureLevel,riskScore,machineTags,onboardingStatus,defenderAVStatus,managedBy,lastIpAddress,lastExternalIpAddress
+                    $output = $MachineResult | Select-Object @{n = 'Computername'; e = { $_.computerDnsName } }, computerDnsName,isPotentialDuplication,osPlatform,version,agentVersion,osBuild,healthStatus,exposureLevel,riskScore,machineTags,onboardingStatus,defenderAVStatus,managedBy,lastIpAddress,lastExternalIpAddress,id
 
                     $LastSeenMachine = ConvertFrom-ISO8601 -Date $MachineResult.lastSeen
 
@@ -168,7 +168,7 @@ PROCESS{
                         $output | Add-Member -MemberType NoteProperty -Name fullScanTimeUTC -Value $fullscanUTC
                     }
 
-                    $Output | Select computername,osPlatform,version,osBuild,isPotentialDuplication,machineTags,healthStatus,onboardingStatus,defenderAvStatus,exposureLevel,riskScore,avEngineVersion,avSignatureVersion,avPlatformVersion,avIsSignatureUpToDate,avIsEngineUpToDate,avIsPlatformuptoDate,avSignatureDataRefreshTime,avSignatureDataRefreshTimeUTC,quickScanTime,quickScanTimeUTC,fullScanTime,fullScanTimeUTC,avmode,LastSeen,LastSeenUTC,lastIpAddress,lastExternalIpAddress,managedBy
+                    $Output | Select computername,osPlatform,version,osBuild,isPotentialDuplication,machineTags,healthStatus,onboardingStatus,defenderAvStatus,exposureLevel,riskScore,avEngineVersion,avSignatureVersion,avPlatformVersion,avIsSignatureUpToDate,avIsEngineUpToDate,avIsPlatformuptoDate,avSignatureDataRefreshTime,avSignatureDataRefreshTimeUTC,quickScanTime,quickScanTimeUTC,fullScanTime,fullScanTimeUTC,avmode,LastSeen,LastSeenUTC,lastIpAddress,lastExternalIpAddress,managedBy,id
 
                 } #endif
 

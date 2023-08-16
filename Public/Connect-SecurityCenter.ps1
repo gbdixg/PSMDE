@@ -33,6 +33,7 @@ PROCESS{
         try {
             $Global:AccessToken = Get-MsalToken -ClientId $ClientID -TenantId $TenantID -Scopes $Scopes -Interactive -ErrorAction Stop -Verbose:$false
 
+
         } catch {
             Write-Warning "Authentication failed '$_'. Unable to continue"
             break
