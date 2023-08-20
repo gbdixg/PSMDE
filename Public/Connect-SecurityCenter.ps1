@@ -15,11 +15,11 @@ Version 1.0
  Param(
         [parameter()]
         [ValidateNotNullOrEmpty()]
-        [String]$TenantID = '00000000-0000-0000-0000-000000000000'
+        [String]$TenantID = '00000000-0000-0000-0000-TENANTID'
         ,
         [parameter()]
         [ValidateNotNullOrEmpty()]
-        [String]$ClientID = '00000000-0000-0000-0000-000000000000'
+        [String]$ClientID = '00000000-0000-0000-0000-APPID'
         ,
         [parameter()]
         [ValidateNotNullOrEmpty()]
