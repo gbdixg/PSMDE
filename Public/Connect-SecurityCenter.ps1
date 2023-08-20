@@ -2,6 +2,8 @@
 <#
 .SYNOPSIS
  Connect to the Defender Security API using interactive authentication
+.DESCRIPTION
+ Used MSAL.PS module to get an access token
 .PARAMETER TENANTID
 The ID od the tenant to connect to
 .PARAMETER CLIENTID
@@ -9,7 +11,7 @@ The application ID of an Azure app to control connection to the API
 .PARAMETER SCOPES
 The scopes required. Doesn't seem important with interactive auth
 .NOTES
-Version 1.0
+Version 1.1
 #>
  [CmdletBinding()]
  Param(
