@@ -3,7 +3,7 @@
 .SYNOPSIS
  Connect to the Defender Security API using interactive authentication
 .DESCRIPTION
- Used MSAL.PS module to get an access token
+ Uses MSAL.PS module to get an access token interactively
 .PARAMETER TENANTID
 The ID od the tenant to connect to
 .PARAMETER CLIENTID
