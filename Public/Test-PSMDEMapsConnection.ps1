@@ -1,7 +1,11 @@
 ﻿Function Test-PSMDEMapsConnection{
 <#
 .SYNOPSIS
- Tests the connection to the Microsoft MAPS service
+ Tests the connection to the Microsoft MAPS service from the local computer
+.DESCRIPTION
+ Uses MpCmdRun.exe
+.NOTES
+ Version 1.0
 #>
 [cmdletBinding()]
 param(
@@ -11,7 +15,11 @@ param(
 )
 PROCESS{
     $Arguments = '-validatemapsconnection'
-    Start-Process -FilePath $MPCMDRun -ArgumentList $Arguments -NoNewWindow -Wait
+    try{
+        Start-Process -FilePath $MPCMDRun -ArgumentList $Arguments -NoNewWindow -Wait -ErrorAction Stop
+    }catch{
+        Write-warning "Failed to run '$MPCMDRun $Arguments' `n'$_'"
+    }
 }
 
 

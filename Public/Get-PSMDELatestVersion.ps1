@@ -10,7 +10,12 @@ Version 1.0
 param()
 
 PROCESS{
-    $Result = Invoke-RestMethod -Uri "https://www.microsoft.com/security/encyclopedia/adlpackages.aspx?action=info" | select -ExpandProperty versions
+    $URL = "https://www.microsoft.com/security/encyclopedia/adlpackages.aspx?action=info"
+    try{
+        $Result = Invoke-RestMethod -Uri $URL -ErrorAction Stop | select -ExpandProperty versions
+    }catch{
+        Write-Warning "Error accessing URL '$URL' `n'$_'"
+    }
     if($Result){
         [PSCustomObject]@{
             Engine = $Result.engine

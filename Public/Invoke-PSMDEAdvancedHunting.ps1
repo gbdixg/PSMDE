@@ -2,18 +2,17 @@
 <#
   .SYNOPSIS
   Runs a Defender advanced hunting query and returns the results
+  .DESCRIPTION
+  Rate limit: Up to 45 calls per minute, 10 minutes of running time per hour, and 4 hours of running time per day
+  Max 100000 rows returned
   .PARAMETER Query
-  The Advanced Hunting query to run. Note that field names are case sensitive e.g. Timestamp not TimeStamp
-  Can be entered on one line or as a here string
-  .PARAMETER MAXRESULTS
-  The query will return up to this number of records from the API
-  A value of 0 will return all results
+  The Advanced Hunting query to run. Can be entered on one line or as a PowerShell 'here string'
+  Note that field names are case sensitive e.g. Timestamp not TimeStamp
 
   .EXAMPLE
   Invoke-PSMDEAdvancedHunting -query 'DeviceProcessEvents | where Timestamp > ago(1d)'
 
-  This command will return up-to 1000 records from the DeviceProcessEvents table
-  that were recorded in the last day.
+  This command will return records from the DeviceProcessEvents table recorded in the last day.
 
   .EXAMPLE
   Invoke-PSMDEAdvancedHunting -query 'DeviceProcessEvents | where Timestamp > ago(1d)' -MaxResult 0
@@ -68,7 +67,10 @@
     AppGuardContainerId                          :
     AdditionalFields                             :
  .NOTES
- Version 1.0
+  Delegated API permissions : AdvancedQuery.Read (Run advanced queries)
+ .LINK
+  https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/run-advanced-query-api?view=o365-worldwide
+
 #>
 [cmdletBinding()]
 param(
@@ -76,57 +78,50 @@ param(
     [Alias("")]
     [ValidateNotNullOrEmpty()]
     [String]$Query
-    ,
-    [parameter()]
-    [int]$MaxResults=1000
 )
 
 PROCESS{
 
-    #$url = 'https://api.securitycenter.microsoft.com/api/advancedqueries/run'
-    $url = 'https://api.securitycenter.microsoft.com/api/advancedhunting/run'
+    $url = "https://api.securitycenter.microsoft.com/api/advancedhunting/run?"
 
     $body = ConvertTo-Json -InputObject @{ 'Query' = $query }
 
-    if($MaxResults -eq 0){ $MaxResults = [int]::MaxValue } # Get all results
-
-    $ReturnedRecords = 0
-
     Do{
 
-        $Response = Invoke-APIRequest -URI $url -Method POST -Body $body
+        try{
+            $Response = Invoke-APIRequest -URI $url -Method POST -Body $body
 
-        Write-Verbose "Returned '$($Response.Stats.dataset_statistics.table_row_count)' rows in '$($Response.Stats.ExecutionTime)' seconds"
+            Write-Verbose "Returned '$($Response.Stats.dataset_statistics.table_row_count)' rows in '$($Response.Stats.ExecutionTime)' seconds"
+        }catch{
+            Write-Warning "Request failed for URL '$URL' `n'$_'"
+        }
 
         if($response.Results){
 
+            # Find fields that need time conversion
             $Schema = $Response.Schema
             $DateProperties = $Schema | Where-Object { $_.Type -eq 'DateTime' } | Select-Object -ExpandProperty Name
 
             $Results = $Response.results
 
                 $Results  | ForEach-Object {
-                    $ReturnedRecords++
-                    if($ReturnedRecords -le $MaxResults){
-
-                        $Result = $_
-                        $DateProperties | ForEach-Object{
-                            $Result."$_" = ConvertFrom-ISO8601 -Date $Result."$_"
-                        }
-                        if ($null -ne $Result){$Result}
+                 
+                    $Result = $_
+                    # Convert to .net dateTime
+                    $DateProperties | ForEach-Object{
+                        $Result."$_" = ConvertFrom-ISO8601 -Date $Result."$_"
                     }
+                    if ($null -ne $Result){$Result}
                 }
         }
 
         # Set the URI to the next page of results
         if($null -ne $response."@odata.nextLink"){
-            $URI = $response."@odata.nextLink"
+            $URL = $response."@odata.nextLink"
         }
 
-    }While(($null -ne $response."@odata.nextLink") -and ($ReturnedRecords -le $MaxResults)) # Large result sets are paged
+    }While($null -ne $response."@odata.nextLink") # Large result sets are paged
 
 }
-
-
 
 }

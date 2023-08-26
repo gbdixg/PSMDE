@@ -4,7 +4,7 @@
   Collects Defender for Endpoint support files into a cab file
   .DESCRIPTION
   Run on a local computer with elevated rights.
-  Output file is saved to C:\ProgramData\Microsoft\Windows Defender\Support\MpSupportFiles.cab
+  Output file is saved to 'C:\ProgramData\Microsoft\Windows Defender\Support\MpSupportFiles.cab'
   .EXAMPLE
   Save-PSMDESuportInfo
 #>
@@ -20,7 +20,11 @@ PROCESS{
 
     if(Test-IsAdmin){
         $Arguments = '-getfiles'
-        Start-Process -FilePath $MPCMDRun -ArgumentList $Arguments -NoNewWindow -Wait
+        try{
+            Start-Process -FilePath $MPCMDRun -ArgumentList $Arguments -NoNewWindow -Wait -ErrorAction Stop
+        }catch{
+            Write-warning "Failed to run '$MPCMDRun $Arguments' `n'$_'"
+        }
 
     }else{
 

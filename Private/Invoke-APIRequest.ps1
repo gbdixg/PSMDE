@@ -1,10 +1,10 @@
 ﻿function Invoke-APIRequest {
     <#
     .SYNOPSIS
-        Perform a call to Security Center API, either as GET, POST or PATCH.
+        Perform a Microsoft API call, either as GET, POST or PATCH or DELETE.
 
     .DESCRIPTION
-        Perform a call to Security Center API, either as GET, POST or PATCH.
+        Calls the API and returns the results or an error
 
     .NOTES
 
@@ -52,15 +52,19 @@
                 "GET"{
                     Write-Verbose "$URI"
                     $Response = Invoke-RestMethod -Uri $URI -Headers $AuthenticationHeader -Method $Method -UseBasicParsing -ErrorAction Stop -Verbose:$false
+                    break
                 }
                 "POST"{
                     $Response = Invoke-RestMethod -Uri $URI -Headers $AuthenticationHeader -Method $Method -Body $Body -ContentType $ContentType -ErrorAction Stop -Verbose:$false
+                    break
                 }
                 "PATCH"{
                     $Response = Invoke-RestMethod -Uri $URI -Headers $AuthenticationHeader -Method $Method -Body $Body -ContentType $ContentType -ErrorAction Stop -Verbose:$false
+                    break
                 }
                 "DELETE"{
                     $Response = Invoke-RestMethod -Uri $URI -Headers $AuthenticationHeader -Method $Method -ErrorAction Stop -Verbose:$false
+                    break
                 }
             }
 
