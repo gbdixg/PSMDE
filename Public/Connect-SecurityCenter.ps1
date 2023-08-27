@@ -26,10 +26,14 @@ Version 1.1
         [parameter()]
         [ValidateNotNullOrEmpty()]
         [String[]]$Scopes = @("https://api.securitycenter.microsoft.com/Software.Read")
+        ,
+        [parameter()]
+        [Switch]$Force
  )
 PROCESS{
+    
     $TokenLifeTime = ($Global:AccessToken.ExpiresOn - (Get-Date).ToUniversalTime()).TotalMinutes
-    if ($TokenLifeTime -le 2) {
+    if ($TokenLifeTime -le 2 -or $Force) {
         Write-Verbose "Token needs to be refreshed"
         Remove-Variable -Name 'AccessToken' -Scope Global -Force -ErrorAction SilentlyContinue
         try {

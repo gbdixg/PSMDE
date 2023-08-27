@@ -41,8 +41,9 @@ PROCESS {
 
     if($PSCmdlet.ParameterSetName -eq "ByName"){
 
+        # Use StartsWith so don't have to specifify fqdn, but use Top= so get multiple results unexpectedly
         $Computername = [System.Web.HttpUtility]::UrlEncode($Computername)
-        $URI = "https://api.securitycenter.windows.com/api/machines?`$Filter=startswith(computerDnsName,'$Computername')"
+        $URI = "https://api.securitycenter.windows.com/api/machines?`$Filter=startswith(computerDnsName,'$Computername')&Top=1"
 
     }else{
         $URI = "https://api.securitycenter.windows.com/api/machines/$DeviceId"
