@@ -35,7 +35,7 @@
 
     BEGIN{
 
-        Connect-SecurityCenter
+        Connect-PSMDE
 
         $AuthenticationHeader = @{
             "Content-Type"  = $ContentType

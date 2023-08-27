@@ -19,7 +19,7 @@
 
     computername : PC123456
     Sha1         : CAE4C347F57DC0FB41DA73AA787C232AE0AE5E72
-    comment      : PSMDE: Quarantine file by sha1
+    comment      : PSMDE: Test quarantine
     status       : Pending
     returnCode   : 0
     type         : StopAndQuarantineFile

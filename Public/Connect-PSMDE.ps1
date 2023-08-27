@@ -1,4 +1,4 @@
-﻿Function Connect-SecurityCenter{
+﻿Function Connect-PSMDE{
 <#
 .SYNOPSIS
  Connect to the Defender Security API using interactive authentication
