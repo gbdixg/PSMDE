@@ -31,25 +31,28 @@
         Machine.Scan (Scan machine)
 
 #>
-[cmdletBinding(DefaultParameterSetName="byid")]
+[cmdletBinding(DefaultParameterSetName="byname")]
 param(
     [parameter(position=0,Mandatory,ValueFromPipeLineByPropertyName,ParameterSetName = "byid")]
     [Alias("id")]
     [ValidateNotNullOrEmpty()]
     [String]$DeviceId
     ,
-    [parameter(Mandatory, ParameterSetName = "byname")]
+    [parameter(position=0,Mandatory,ValueFromPipeLine,ValueFromPipeLineByPropertyName,ParameterSetName = "byname")]
     [Alias("MachineName", "hostname", "devicename", "device", "host", "computer")]
     [ValidateNotNullOrEmpty()]
     [String]$Computername
     ,
     [parameter()]
-    [ValidateSet('quick','full')]
-    [String]$ScanType="quick"
+    [ValidateSet('Quick','Full')]
+    [String]$ScanType="Quick"
 
 )
 
 PROCESS{
+
+    $TS = (Get-Culture).TextInfo
+    $ScanType = $TS.ToTitleCase($ScanType)
 
     if($PSCmdlet.ParameterSetName -eq 'byname'){
         try{
@@ -62,11 +65,11 @@ PROCESS{
 
     $url = "https://api.securitycenter.microsoft.com/api/machines/$Deviceid/runAntiVirusScan"
 
-    $body = ConvertTo-Json -InputObject @{ 'Comment' = "Scan initiated by $($ENV:Username)" ; 'ScanType' = 'Quick' }
+    $body = ConvertTo-Json -InputObject @{ 'Comment' = "$ScanType scan initiated by PSMDE" ; 'ScanType' = "$ScanType" }
 
     try{
         $Response = Invoke-APIRequest -URI $url -Method POST -Body $body
-        $Response | Select-Object @{n='Computername';e={$_.computerDnsName}},type,status,errorHResult,requestor,requestorComment,@{n='DeviceId';e={$_.machineId}}
+        $Response | Select-Object @{n='Computername';e={$_.computerDnsName}},type,@{n='ScanType';e={$ScanType}},status,errorHResult,requestor,requestorComment,@{n='DeviceId';e={$_.machineId}}
     }catch{
         Write-Warning "$Computername : Failed to trigger scan '$_'"
     }

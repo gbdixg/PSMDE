@@ -31,7 +31,7 @@ param(
     ,
     [parameter()]
     [ValidateNotNullOrEmpty()]
-    [string]$Comment = "PSMDE: Release device from isolation"
+    [string]$Comment = "Release device from isolation"
 )
 BEGIN {
     Add-Type -AssemblyName 'System.Web'

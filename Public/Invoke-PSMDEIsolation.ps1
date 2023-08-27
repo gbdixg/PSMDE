@@ -40,7 +40,7 @@ param(
     ,
     [parameter()]
     [ValidateNotNullOrEmpty()]
-    [string]$Comment = "PSMDE: Isolate device"
+    [string]$Comment = "Isolate device"
 )
 BEGIN {
     Add-Type -AssemblyName 'System.Web'
