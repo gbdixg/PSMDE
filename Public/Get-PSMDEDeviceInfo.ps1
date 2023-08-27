@@ -63,7 +63,10 @@
     loggedOnUsers                 : {@{id=rnd\user1; lastSeen=25/08/2023 14:41:16; logonTypes=RemoteInteractive}, @{id=azuread\adminuser; lastSeen=15/08/2023 22:51:25; logonTypes=Interactive}}
     id                            : c4a833d8a0da6ad339076368d1681e6930c49fef
  .NOTES
-    Delegated API permissions : Machine.Read (Read machine information)
+    Delegated API permissions : 
+        Machine.Read (Read machine information)
+        Alert.Read (Read alerts)
+        Vulnerability.Read (Read Threat and Vulnerability Management vulnerability information)
  .LINK
    https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machines?view=o365-worldwide
 #>
@@ -179,14 +182,14 @@ PROCESS{
                     $output | Add-Member -MemberType NoteProperty -Name fullScanTimeUTC -Value $fullscanUTC
 
                     # Logged on user info
+                    $UserList = @()
                     $URI = "https://api.securitycenter.microsoft.com/api/machines/$($MachineResult.id)/logonusers"
                     try{
                         $UserResult = Invoke-APIRequest -Method Get -Uri $URI
                     }catch{
                         Write-Warning "$Computername : Request failed for API '$URI' `n'$_'"
                     }
-
-                    $UserList = @()
+                    
                     if($UserResult.Value){
                         Foreach($UserEntry in $UserResult.value){
                             $UserList+=[PSCustomObject]@{
@@ -199,9 +202,61 @@ PROCESS{
                         $UserList = @()
                     }
                     $output | Add-Member -MemberType NoteProperty -Name loggedOnUsers -Value $UserList
+
+                    # Alerts
+                    $AlertList = @()
+                    $URI = "https://api.securitycenter.microsoft.com/api/machines/$($MachineResult.id)/alerts"
+                    try{
+                        $AlertResult = Invoke-APIRequest -Method Get -Uri $URI
+                    }catch{
+                        Write-Warning "$Computername : Request failed for API '$URI' `n'$_'"
+                    }
+                    
+                    if($AlertResult.Value){
+                        Foreach($AlertEntry in $AlertResult.value){
+                            $AlertList+=[PSCustomObject]@{
+                                serverity = $AlertEntry.severity
+                                alertCreationTime = $AlertEntry.alertCreationTime
+                                detectionSource = $AlertEntry.detectionSource
+                                category = $AlertEntry.category
+                                threatName = $AlertEntry.threatName
+                                threatFamilyName = $AlertEntry.threatFamilyName
+                            }
+                        }
+                    }else{
+                        $AlertList = @()
+                    }
+                    $output | Add-Member -MemberType NoteProperty -Name alertCount -Value $AlertList.Count
+                    $output | Add-Member -MemberType NoteProperty -Name alerts -Value $AlertList
+
+
+                    # Vulnerabilities
+                    $CVEList = @()
+                    $URI = "https://api.securitycenter.microsoft.com/api/machines/$($MachineResult.id)/vulnerabilities"
+                    try{
+                        $CVEResult = Invoke-APIRequest -Method Get -Uri $URI
+                    }catch{
+                        Write-Warning "$Computername : Request failed for API '$URI' `n'$_'"
+                    }
+                    
+                    if($CVEResult.Value){
+                        Foreach($CVEEntry in $CVEResult.value){
+                            $CVEList+=[PSCustomObject]@{
+                                name = $CVEEntry.name
+                                description = $CVEEntry.description
+                                severity = $CVEEntry.severity
+                                publicExploit = $CVEEntry.publicExploit
+                                firstDetected = $CVEEntry.firstDetected
+                            }
+                        }
+                    }else{
+                        $CVEList = @()
+                    }
+                    $output | Add-Member -MemberType NoteProperty -Name CVEs -Value $CVEList
+
                 }
 
-                $Output | Select-Object computername,osPlatform,version,osBuild,isPotentialDuplication,machineTags,healthStatus,onboardingStatus,defenderAvStatus,exposureLevel,riskScore,avEngineVersion,avSignatureVersion,avPlatformVersion,avIsSignatureUpToDate,avIsEngineUpToDate,avIsPlatformuptoDate,avSignatureDataRefreshTime,avSignatureDataRefreshTimeUTC,quickScanTime,quickScanTimeUTC,fullScanTime,fullScanTimeUTC,avmode,LastSeen,LastSeenUTC,lastIpAddress,lastExternalIpAddress,managedBy,loggedOnUsers,@{n='deviceid';e={$_.id}}
+                $Output | Select-Object computername,osPlatform,version,osBuild,isPotentialDuplication,machineTags,healthStatus,onboardingStatus,defenderAvStatus,exposureLevel,riskScore,avEngineVersion,avSignatureVersion,avPlatformVersion,avIsSignatureUpToDate,avIsEngineUpToDate,avIsPlatformuptoDate,avSignatureDataRefreshTime,avSignatureDataRefreshTimeUTC,quickScanTime,quickScanTimeUTC,fullScanTime,fullScanTimeUTC,avmode,LastSeen,LastSeenUTC,lastIpAddress,lastExternalIpAddress,managedBy,loggedOnUsers,alertCount,alerts,CVEs,@{n='deviceid';e={$_.id}}
 
             }#foreach
 
@@ -216,8 +271,5 @@ PROCESS{
 
 }
 
-END{
-
-}
 
 }
