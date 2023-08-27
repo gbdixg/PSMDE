@@ -150,7 +150,7 @@ deviceid      : c6a833d9a0da6ad439056368d1681e7940c49fee
 
 ## EXAMPLE 4
 
-The following example queries a Microsoft URI for the version of Defender for Endpoint
+The following example queries a Microsoft URI for the latest available version of Defender for Endpoint
 
 ```PowerShell
 Get-PSMDELatestVersion
